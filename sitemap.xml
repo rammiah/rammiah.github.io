@@ -3,26 +3,26 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://rammiah.org/</loc>
+    <loc>http://rammiah.org/</loc>
     <lastmod>2020-05-24T17:18:53+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://rammiah.org/posts/my-first-post/</loc>
+    <loc>http://rammiah.org/posts/my-first-post/</loc>
     <lastmod>2020-05-24T17:18:53+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://rammiah.org/posts/</loc>
+    <loc>http://rammiah.org/posts/</loc>
     <lastmod>2020-05-24T17:18:53+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://rammiah.org/categories/</loc>
+    <loc>http://rammiah.org/categories/</loc>
   </url>
   
   <url>
-    <loc>https://rammiah.org/tags/</loc>
+    <loc>http://rammiah.org/tags/</loc>
   </url>
   
 </urlset>
