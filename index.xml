@@ -21,5 +21,378 @@
 文章修改更新。</description>
     </item>
     
+    <item>
+      <title>Verilog踩坑日志</title>
+      <link>http://rammiah.org/posts/veilog%E8%B8%A9%E5%9D%91%E6%97%A5%E5%BF%97/</link>
+      <pubDate>Wed, 20 Feb 2019 16:59:06 +0800</pubDate>
+      
+      <guid>http://rammiah.org/posts/veilog%E8%B8%A9%E5%9D%91%E6%97%A5%E5%BF%97/</guid>
+      <description>移位操作 verilog中的reg向量是可以看做一个整数直接使用的，在定义或者声明时不指明符号的话，默认都是无符号数，在进行移位时都是使用逻辑运算的，只有指明有符号数时右移位使用&amp;gt;&amp;gt;&amp;gt;才会使用符号位进行填充，但是在你想要对一个未声明为有符号的向量例如data使用有符号移位时可以这么写$signed(data)&amp;gt;&amp;gt;&amp;gt;shift，将其转换为有符号数进行移位。
+常量的声明 verilog的常量声明也是个坑，直接的一个数字比如1就会被当成一个32位的数，有无符号看是否有signed声明，而定义一个别的数时例如16位的数0x1f时需要写成16h&#39;1f，而不是2&#39;h1f，前面的数字实际上值得是数字的二进制宽度。其他进制相同。
+数字的大小比较 数字的大小比较建议都是先给其加上signed或者signed系统函数再比较，这样的话会更加明显一些。
+数字位宽拓展 带符号拓展，将符号位重复对应次数，例如16位的数据data要拓展为32位数据，{{16{data[15]}, data}}，无符号拓展为{{16{0}}, data}。很有用的技巧，不需要再去编写符号拓展模块，直接写在代码中就行了，在立即数拓展时会用到。
+指令数据的读入 系统函数$memread[h/b]，16进制直接一行给出一个位数对应的16进制数据，很方便的读入指令，2进制的同理，不过需要给出转换为二进制的数据。</description>
+    </item>
+    
+    <item>
+      <title>V2Ray搭建过程记录</title>
+      <link>http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/</link>
+      <pubDate>Mon, 18 Feb 2019 11:07:27 +0800</pubDate>
+      
+      <guid>http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/</guid>
+      <description>由于前几天我的小飞机在连接时会有一定几率被reset，去年也在Github上看到了使用机器学习方法来检测​飞机流量的方法，于是前去寻找新的科学爱国的方式，最终找到了v2ray这个项目，看了一下官网的教程，比小飞机复杂了不少，决定还是记录下来搭建过程为好，以免以后需要时再用到。
+准备服务器 能看到这篇文章的人应该不用我来提示为什么要准备一台能够访问外网的VPS了吧，我自己用的是阿里云的服务器，比较方便的地方就是控制台比较好用一些，手机上也有app，以前用的是vultr的3.5$的东京的服务器，说实话延迟确实比较高，阿里云的轻量应用服务器链接，可以选里面的24元/月香港的那个，系统选择ubuntu16.04，时长1个月，支付宝付款就行。安装好后配置一下，可以选择在远程连接里加入自己的密钥，重启后使用密钥登陆，关闭密码登陆，这样的话基本上是不会被人黑掉了。
+安装V2Ray v2ray在ubuntu上没有仓库，所以就只好去项目主页下载了。
+打开v2ray，选择自己系统版本对应的下载就好了，我的是Ubuntu16.04 64位，就选v2ray-linux-64.zip，右键复制链接地址，连上服务器，使用wget下载文件到服务器，安装一下zip，先创建一个v2ray文件夹，使用unzip将压缩包内容解压到v2ray文件夹中，进入文件夹，将systemd中的v2ray.service移动到/etc/systemd/system/，这样就可以使用systemd启动v2ray了，创建/etc/v2ray文件夹，准备存放config.json，退回到上级v2ray文件夹所在目录，将v2ray文件夹移动到/usr/bin中，至此安装完成。
+配置文件编写 在/etc/v2ray/中创建一个config.json文件，我写的配置如下：
+{ &amp;#34;log&amp;#34;: { &amp;#34;loglevel&amp;#34;: &amp;#34;warning&amp;#34; }, &amp;#34;inbounds&amp;#34;: [{ &amp;#34;port&amp;#34;:777, // 监听的端口 &amp;#34;listen&amp;#34;: &amp;#34;0.0.0.0&amp;#34;, // 监听的ip &amp;#34;protocol&amp;#34;: &amp;#34;vmess&amp;#34;, // 加密方式 &amp;#34;settings&amp;#34;: { &amp;#34;udp&amp;#34;: true, // 启用udp &amp;#34;clients&amp;#34;: [{ &amp;#34;id&amp;#34;: &amp;#34;uuid&amp;#34;, //python可以使用uuid.uuid4()生成一个，服务器客户端必须相同 &amp;#34;alterId&amp;#34;: 100 // 1-100随意，我选100，只要客户端与服务器相同即可 }] }, &amp;#34;streamSettings&amp;#34;: {// 此处为开启kcp，不需要的可以删掉 &amp;#34;network&amp;#34;: &amp;#34;mkcp&amp;#34;, &amp;#34;kcpSettings&amp;#34;: { &amp;#34;uplinkCapacity&amp;#34;: 4, // 传出速率30M带宽大约就是4MB/s &amp;#34;downlinkCapacity&amp;#34;: 12, // 阿里云的传入带宽测试的为100M作用，设置成12MB/s &amp;#34;congestion&amp;#34;: true, // 开启阻塞控制 &amp;#34;header&amp;#34;: { &amp;#34;type&amp;#34;: &amp;#34;none&amp;#34; } } } }], // 传出直接freedom &amp;#34;outbounds&amp;#34;: [{ &amp;#34;protocol&amp;#34;: &amp;#34;freedom&amp;#34;, &amp;#34;settings&amp;#34;: {} }] } 使用systemctl start v2ray启动，systemctl status v2ray进行日志查看，systemctl enable v2ray开机自启。</description>
+    </item>
+    
+    <item>
+      <title>c&#43;&#43;string与数字的互转</title>
+      <link>http://rammiah.org/posts/c&#43;&#43;string%E4%B8%8E%E6%95%B0%E5%AD%97%E7%9A%84%E4%BA%92%E8%BD%AC/</link>
+      <pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/c&#43;&#43;string%E4%B8%8E%E6%95%B0%E5%AD%97%E7%9A%84%E4%BA%92%E8%BD%AC/</guid>
+      <description>c++reference上面列举了一些方法。
+1.数字转string： 数字转string，标准库里专门提供了函数：
+ 包含的头文件 string，使用的话就是直接std::to_string(T para)，会返回一个string，这个函数接受的参数可以是int、long、long long、及其unsigned，float、double、long double等，使用起来还是比较方便的。
+ 2.string转数字 至于string转数字，标准库也提供有函数，可是我在搜索的时候发现了很多是使用stringstream，我看了下也是比较麻烦，我这里就不说了。
+ 同样包含头文件 string，使用方法，std::stoi,std::stol,std::stoll,std::stof等等，其实就是把c中的a换成s就是了，也是很方便的。
+  </description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43;常量方法</title>
+      <link>http://rammiah.org/posts/c&#43;&#43;%E5%B8%B8%E9%87%8F%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/c&#43;&#43;%E5%B8%B8%E9%87%8F%E6%96%B9%E6%B3%95/</guid>
+      <description>本文总结了静态成员的使用、单例的实现、常量对象与常量方法，以及如何将常量方法重载为普通方法。
+静态成员  对象成员的声明前加 static 即可定义为静态成员，静态成员必须在声明类的文件中进行声明（通常会初始化），否则链接错。 访问静态成员可以通过类名，也可以通过对象名。
+class CPerson{ static int count; }; int CPerson::count = 0; CPerson p1, &amp;amp;p2 = p1, *p3 = new CPerson(); cout&amp;lt;&amp;lt;CPerson::count&amp;lt;&amp;lt;endl; cout&amp;lt;&amp;lt;p1.count&amp;lt;&amp;lt;endl; cout&amp;lt;&amp;lt;p2.count&amp;lt;&amp;lt;endl; cout&amp;lt;&amp;lt;p3-&amp;gt;count&amp;lt;&amp;lt;endl;  只有静态常量整型才可以在类的声明中，直接初始化。 sizeof运算符不会计算静态常量。 静态方法不可访问非静态成员、this指针。  单例的实现  在C++中，借由静态成员变量，可以实现单例模式。首先需要将构造函数私有化，并提供获取单例的方法。 此后还需禁止复制构造函数、禁止赋值运算符。
+class CPerson{ private: static CPerson* p; CPerson(){}; CPerson(CPerson&amp;amp;); const CPerson&amp;amp; operator= (const CPerson&amp;amp;); public: static Person* instance(){ return p ? p : (p = new P()); } }; CPerson* CPerson::p = NULL; 常量对象与常量方法  C++类是用户定义的数据类型，也可以声明为常量。因为方法调用可能会改变对象属性， 所以常量对象只能调用构造函数、析构函数以及常量方法。</description>
+    </item>
+    
+    <item>
+      <title>Java正则表达式匹配Bing图片链接</title>
+      <link>http://rammiah.org/posts/java%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8Dbing%E5%9B%BE%E7%89%87%E9%93%BE%E6%8E%A5/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/java%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8Dbing%E5%9B%BE%E7%89%87%E9%93%BE%E6%8E%A5/</guid>
+      <description>Java学习到了正则表达式，总想做点有用的东西，这两天想给电脑换壁纸，看到Bing每天的主页图片挺好看的，就寻思着抓下来。 第一步就是分析主页的结构了这个Bing的主页图片直接使用小箭头抓是抓不到的，在Network的Img里我们可以找到图片所在处：
+把链接copy下来，在Element里面搜索我们边可以看到链接是在一个JS脚本里面的，这个时候就比较清楚我们要怎么搞了， 链接所在的那一片弄出来就是这个样子了
+ g_img={url: &amp;ldquo;/az/hprichbg/rb/LoxodontaAfricana_ZH-CN10434704249_1920x1080.jpg&amp;rdquo;} 把这个东东里的链接搞出来加上 http://cn.bing.com 就是我们需要的图片链接了，那么这个正则表达式写出来就是
+ &amp;quot;g_img=\\{url: \&amp;quot;([\\w_\\-/]+?\\.jpg)\&amp;quot;&amp;quot; 我开始找的时候把后面的&amp;rdquo;}&amp;ldquo;加上去发现找不到链接，只好使用这个了，在找到链接后我们就可以获取到图片的二进制内容，写入Java的文件中保存起来了。这里又学习了一点Java的文件知识，如何判断一个文件是否已经存在，新建文件，写入二进制等东西。 具体的代码就是下面了，也不是很多，就几十行
+import java.io.File; import java.io.FileOutputStream; import java.io.IOException; import java.io.InputStream; import java.net.URL; import java.nio.file.FileAlreadyExistsException; import java.util.regex.Matcher; import java.util.regex.Pattern; public class GetBingPicture { public static void main(String[] args) throws Exception { GetBingPicture getBingPicture = new GetBingPicture(); String home = &amp;#34;http://cn.bing.com&amp;#34;; // 获取链接  String url = getBingPicture.GetUrl(home); // 保存图片  getBingPicture.SavePicture(home + url); } private String GetUrl(String home_url) throws Exception { InputStream is = new URL(home_url).</description>
+    </item>
+    
+    <item>
+      <title>Leetcode 318 Maximum Product of Word Lengths</title>
+      <link>http://rammiah.org/posts/leetcode-318-maximum-product-of-word-lengths/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-318-maximum-product-of-word-lengths/</guid>
+      <description>题目分析  Given a string array words, find the maximum value of length(word[i]) * length(word[j]) where the two words do not share common letters. You may assume that each word will contain only lower case letters. If no such two words exist, return 0.
+Example 1:
+Given [&amp;quot;abcw&amp;quot;, &amp;quot;baz&amp;quot;, &amp;quot;foo&amp;quot;, &amp;quot;bar&amp;quot;, &amp;quot;xtfn&amp;quot;, &amp;quot;abcdef&amp;quot;] Return 16 The two words can be &amp;quot;abcw&amp;quot;, &amp;quot;xtfn&amp;quot;.
+Example 2:
+Given [&amp;quot;a&amp;quot;, &amp;quot;ab&amp;quot;, &amp;quot;abc&amp;quot;, &amp;quot;d&amp;quot;, &amp;quot;cd&amp;quot;, &amp;quot;bcd&amp;quot;, &amp;quot;abcd&amp;quot;] Return 4 The two words can be &amp;quot;ab&amp;quot;, &amp;quot;cd&amp;quot;.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 33</title>
+      <link>http://rammiah.org/posts/leetcode-33/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-33/</guid>
+      <description>今天我没事干，决定把好多天没写的Leetcode看一下，看到了33题，题目如下：
+ 给定一个经过“旋转变换”的有序数组还有一个你要查找的目标数字，给出目标数字在数组中的下标，不存在则返回-1。例如给定{4， 5， 6， 7， 0， 1， 2， 3}，6，函数返回值就应该是2。
+ 题目相信大家都能看懂，也都能想到一定的方法。那么接下来就一起探讨一下吧。 第一种方法：
+最容易想到的也一定就是最笨的，那就是直接遍历这个数组，这当然是可行的，下面给出对应的Java代码：
+public class Solution { public int search(int[] nums, int target) { // 使用Java一定要注意判断是否为空指针  if (nums == null)return -1; for (int i = 0; i &amp;lt; nums.length; i++) { if (nums[i] == target) return i; } return -1; } } 嗯，结果还不错，顺利通过所有的样例，排名超过87%，(lll￢ω￢)这么暴力的吗？难道大部分人都是直接遍历的。。。
+第二种方法： 嗯，我想大家都应该理解出题人绝不是想让我们暴力搜索的，所以自然看到题目中的有序，就应该想到是二分搜索啦，那么这个题的话要怎么使用二分搜索呢？由题目中的样例可以推测我们是要把数组分为两部分看的，判断方法就需要改进了。
+ 首先判断mid处的值是不是target，是的话可以直接返回，不是的话就有点麻烦了，判断mid是否大于最左端处的值，大于说明这个mid是在左端的半边的，这个时候如果target夹在两者中间时就只需要r = mid - 1就是了，没有在其中的话说明不是在mid左半边的l = mid + 1，下面的就同理了。
+ 看代码：
+public class Solution { public int search(int[] nums, int target) { // 使用Java一定要注意判断是否为空指针  if (nums == null)return -1; int l = 0, r = nums.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 567 Permutation in String</title>
+      <link>http://rammiah.org/posts/leetcode-567-permutation-in-string/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-567-permutation-in-string/</guid>
+      <description>传送门
+题目分析  Given two strings
+s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string&amp;rsquo;s permutations is the substring of the second string.
+Example 1:
+Input:s1 = &amp;quot;ab&amp;quot; s2 = &amp;quot;eidbaooo&amp;quot; Output:True Explanation: s2 contains one permutation of s1 (&amp;quot;ba&amp;quot;). Example 2:
+Input:s1= &amp;quot;ab&amp;quot; s2 = &amp;quot;eidboaoo&amp;quot; Output: False Note:
+ The input strings only contain lower case letters.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 796 Rotate String</title>
+      <link>http://rammiah.org/posts/leetcode-796-rotate-string/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-796-rotate-string/</guid>
+      <description>传送门：LeetCode 796
+题目分析 题目原文：
+ We are given two strings, A and B.
+A shift on A consists of taking string A and moving the leftmost character to the rightmost position. For example, if A = &#39;abcde&#39;, then it will be &#39;bcdea&#39; after one shift on A. Return True if and only if A can become B after some number of shifts on A.
+Example 1: Input: A = &#39;abcde&#39;, B = &#39;cdeab&#39; Output: true Example 2: Input: A = &#39;abcde&#39;, B = &#39;abced&#39; Output: false  题目就是一个字符串经过移位操作操作与另一个字符串相等，类似循环移位，判断给定的两个字符串是否满足这种关系。</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 804 Unique Morse Code Words</title>
+      <link>http://rammiah.org/posts/leetcode-804-unique-morse-code-words/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-804-unique-morse-code-words/</guid>
+      <description>传送门
+题目分析  International Morse Code defines a standard encoding where each letter is mapped to a series of dots and dashes, as follows: &amp;quot;a&amp;quot; maps to &amp;quot;.-&amp;quot;, &amp;quot;b&amp;quot; maps to &amp;quot;-...&amp;quot;, &amp;quot;c&amp;quot; maps to &amp;quot;-.-.&amp;quot;, and so on.
+For convenience, the full table for the 26 letters of the English alphabet is given below:
+[&amp;quot;.-&amp;quot;,&amp;quot;-...&amp;quot;,&amp;quot;-.-.&amp;quot;,&amp;quot;-..&amp;quot;,&amp;quot;.&amp;quot;,&amp;quot;..-.&amp;quot;,&amp;quot;--.&amp;quot;,&amp;quot;....&amp;quot;,&amp;quot;..&amp;quot;,&amp;quot;.---&amp;quot;,&amp;quot;-.-&amp;quot;,&amp;quot;.-..&amp;quot;,&amp;quot;--&amp;quot;,&amp;quot;-.&amp;quot;,&amp;quot;---&amp;quot;,&amp;quot;.--.&amp;quot;,&amp;quot;--.-&amp;quot;,&amp;quot;.-.&amp;quot;,&amp;quot;...&amp;quot;,&amp;quot;-&amp;quot;,&amp;quot;..-&amp;quot;,&amp;quot;...-&amp;quot;,&amp;quot;.--&amp;quot;,&amp;quot;-..-&amp;quot;,&amp;quot;-.--&amp;quot;,&amp;quot;--..&amp;quot;] Now, given a list of words, each word can be written as a concatenation of the Morse code of each letter.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 807 Max Increase to Keep City Skyline</title>
+      <link>http://rammiah.org/posts/leetcode-807-max-increase-to-keep-city-skyline/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-807-max-increase-to-keep-city-skyline/</guid>
+      <description>传送门
+题目分析  In a 2 dimensional array grid, each value grid[i][j] represents the height of a building located there. We are allowed to increase the height of any number of buildings, by any amount (the amounts can be different for different buildings). Height 0 is considered to be a building as well.
+At the end, the &amp;ldquo;skyline&amp;rdquo; when viewed from all four directions of the grid, i.e. top, bottom, left, and right, must be the same as the skyline of the original grid.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 820 Short Encoding of Words</title>
+      <link>http://rammiah.org/posts/leetcode-820-short-encoding-of-words/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-820-short-encoding-of-words/</guid>
+      <description>传送门
+题目分析  Given a list of words, we may encode it by writing a reference string S and a list of indexes A. For example, if the list of words is [&amp;quot;time&amp;quot;, &amp;quot;me&amp;quot;, &amp;quot;bell&amp;quot;], we can write it as S = &amp;quot;time#bell#&amp;quot; and indexes = [0, 2, 5].
+Then for each index, we will recover the word by reading from the reference string from that index until we reach a &amp;ldquo;#&amp;rdquo; character.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 821 Card Flipping Game</title>
+      <link>http://rammiah.org/posts/leetcode-821-card-flipping-game/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-821-card-flipping-game/</guid>
+      <description>传送门
+题目分析  On a table are N cards, with a positive integer printed on the front and back of each card (possibly different).
+We flip any number of cards, and after we choose one card.
+If the number X on the back of the chosen card is not on the front of any card, then this number X is good.
+What is the smallest number that is good? If no number is good, output 0.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 822 Card Flipping Game</title>
+      <link>http://rammiah.org/posts/leetcode-822-card-flipping-game/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-822-card-flipping-game/</guid>
+      <description>传送门
+题目分析  On a table are N cards, with a positive integer printed on the front and back of each card (possibly different).
+We flip any number of cards, and after we choose one card.
+If the number X on the back of the chosen card is not on the front of any card, then this number X is good.
+What is the smallest number that is good? If no number is good, output 0.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 824 Goat Latin</title>
+      <link>http://rammiah.org/posts/leetcode-824-goat-latin/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-824-goat-latin/</guid>
+      <description>传送门
+题目分析  A sentence S is given, composed of words separated by spaces. Each word consists of lowercase and uppercase letters only.
+We would like to convert the sentence to &amp;ldquo;Goat Latin&amp;rdquo; (a made-up language similar to Pig Latin.)
+The rules of Goat Latin are as follows:
+ If a word begins with a vowel (a, e, i, o, or u), append &amp;quot;ma&amp;quot; to the end of the word. For example, the word &amp;lsquo;apple&amp;rsquo; becomes &amp;lsquo;applema&amp;rsquo;.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 825 Friends Of Appropriate Ages</title>
+      <link>http://rammiah.org/posts/leetcode-825-friends-of-appropriate-ages/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-825-friends-of-appropriate-ages/</guid>
+      <description>传送门
+题目分析  Some people will make friend requests. The list of their ages is given and ages[i] is the age of the ith person.
+Person A will NOT friend request person B (B != A) if any of the following conditions are true:
+ age[B] &amp;lt;= 0.5 * age[A] + 7 age[B] &amp;gt; age[A] age[B] &amp;gt; 100 &amp;amp;&amp;amp; age[A] &amp;lt; 100  Otherwise, A will friend request B.
+Note that if A requests B, B does not necessarily request A.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 826 Most Profit Assigning Work</title>
+      <link>http://rammiah.org/posts/leetcode-826-most-profit-assigning-work/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-826-most-profit-assigning-work/</guid>
+      <description>传送门
+题目分析  We have jobs: difficulty[i] is the difficulty of the ith job, and profit[i] is the profit of the ith job.
+Now we have some workers. worker[i] is the ability of the ith worker, which means that this worker can only complete a job with difficulty at most worker[i].
+Every worker can be assigned at most one job, but one job can be completed multiple times.
+For example, if 3 people attempt the same job that pays $1, then the total profit will be $3.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 829 Consecutive Numbers Sum </title>
+      <link>http://rammiah.org/posts/leetcode-829-consecutive-numbers-sum/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-829-consecutive-numbers-sum/</guid>
+      <description>传送门
+题目分析  Given a positive integer N, how many ways can we write it as a sum of consecutive positive integers?
+Example 1:
+Input: 5 Output: 2 Explanation: 5 = 5 = 2 + 3 Example 2:
+Input: 9 Output: 3 Explanation: 9 = 9 = 4 + 5 = 2 + 3 + 4 Example 3:
+Input: 15 Output: 4 Explanation: 15 = 15 = 8 + 7 = 4 + 5 + 6 = 1 + 2 + 3 + 4 + 5 Note: 1 &amp;lt;= N &amp;lt;= 10 ^ 9.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 838 Push Dominoes</title>
+      <link>http://rammiah.org/posts/leetcode-838-push-dominoes/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-838-push-dominoes/</guid>
+      <description>传送门
+题目分析  There are N dominoes in a line, and we place each domino vertically upright.
+In the beginning, we simultaneously push some of the dominoes either to the left or to the right.
+After each second, each domino that is falling to the left pushes the adjacent domino on the left.
+Similarly, the dominoes falling to the right push their adjacent dominoes standing on the right.
+When a vertical domino has dominoes falling on it from both sides, it stays still due to the balance of the forces.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 842 Split Array into Fibonacci Sequence</title>
+      <link>http://rammiah.org/posts/leetcode-842-split-array-into-fibonacci-sequence/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-842-split-array-into-fibonacci-sequence/</guid>
+      <description>传送门
+题目分析  Given a string S of digits, such as S = &amp;quot;123456579&amp;quot;, we can split it into a Fibonacci-like sequence [123, 456, 579].
+Formally, a Fibonacci-like sequence is a list F of non-negative integers such that:
+ 0 &amp;lt;= F[i] &amp;lt;= 2^31 - 1, (that is, each integer fits a 32-bit signed integer type); F.length &amp;gt;= 3; andF[i] + F[i+1] = F[i+2]for all 0 &amp;lt;= i &amp;lt; F.length - 2.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 853. Car Fleet </title>
+      <link>http://rammiah.org/posts/leetcode-853.-car-fleet/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-853.-car-fleet/</guid>
+      <description>传送门
+题目分析  N cars are going to the same destination along a one lane road. The destination is target miles away.
+Each car i has a constant speed speed[i] (in miles per hour), and initial position position[i] miles towards the target along the road.
+A car can never pass another car ahead of it, but it can catch up to it, and drive bumper to bumper at the same speed.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 855. Exam Room </title>
+      <link>http://rammiah.org/posts/leetcode-855.-exam-room/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-855.-exam-room/</guid>
+      <description>传送门
+题目分析  In an exam room, there are N seats in a single row, numbered 0, 1, 2, ..., N-1.
+When a student enters the room, they must sit in the seat that maximizes the distance to the closest person. If there are multiple such seats, they sit in the seat with the lowest number. (Also, if no one is in the room, then the student sits at seat number 0.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 858 Mirror Reflection</title>
+      <link>http://rammiah.org/posts/leetcode-858-mirror-reflection/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-858-mirror-reflection/</guid>
+      <description>传送门
+题目分析  There is a special square room with mirrors on each of the four walls. Except for the southwest corner, there are receptors on each of the remaining corners, numbered 0, 1, and 2.
+The square room has walls of length p, and a laser ray from the southwest corner first meets the east wall at a distance q from the 0th receptor.
+Return the number of the receptor that the ray meets first.</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 859 Buddy Strings</title>
+      <link>http://rammiah.org/posts/leetcode-859-buddy-strings/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-859-buddy-strings/</guid>
+      <description>传送门
+题目分析  Given two strings A and B of lowercase letters, return true if and only if we can swap two letters in A so that the result equals B.
+Example 1:
+Input: A = &amp;quot;ab&amp;quot;, B = &amp;quot;ba&amp;quot; Output: true Example 2:
+Input: A = &amp;quot;ab&amp;quot;, B = &amp;quot;ab&amp;quot; Output: false Example 3:
+Input: A = &amp;quot;aa&amp;quot;, B = &amp;quot;aa&amp;quot; Output: true Example 4:
+Input: A = &amp;quot;aaaaaaabc&amp;quot;, B = &amp;quot;aaaaaaacb&amp;quot; Output: true Example 5:</description>
+    </item>
+    
+    <item>
+      <title>LeetCode 859 Score of Parentheses </title>
+      <link>http://rammiah.org/posts/leetcode-859-score-of-parentheses/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/leetcode-859-score-of-parentheses/</guid>
+      <description>传送门
+题目分析  Given a balanced parentheses string S, compute the score of the string based on the following rule:
+ () has score 1 AB has score A + B, where A and B are balanced parentheses strings. (A) has score 2 * A, where A is a balanced parentheses string.  Example 1:
+Input: &amp;quot;()&amp;quot; Output: 1 Example 2:
+Input: &amp;quot;(())&amp;quot; Output: 2 Example 3:
+Input: &amp;quot;()()&amp;quot; Output: 2 Example 4:</description>
+    </item>
+    
+    <item>
+      <title>PAT 1016. Phone Bills (25)</title>
+      <link>http://rammiah.org/posts/pat-1016.-phone-bills-25/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/pat-1016.-phone-bills-25/</guid>
+      <description>题目分析 原题相信大家都看见了，题目几乎不涉及算法，主要就是考大家的细心，题目大意就是给我们所有用户的长途电话记录，根据用户分组，计算每个用户需要交的电话费，打印账单，这个题隐含着如果一个用户没有一次完整的打电话记录就不输出，我起初在这个上面栽了跟头，后来及时更正了。
+解题逻辑  读入花费的收费信息 读入用户的信息，使用map将不同的用户信息分隔开，将on-line和off-line记录放到用户的记录表中，标记记录类型。 对map进行遍历，对用户的on-line、off-line记录排序，找出所有可以组成完整通话的记录，计算费用并记录。 输出信息  代码 #include &amp;lt;cstdio&amp;gt;#include &amp;lt;map&amp;gt;#include &amp;lt;vector&amp;gt;#include &amp;lt;algorithm&amp;gt; using namespace std; int rate[24]; struct Record { int day, hour, min; char type; Record(int day, int hour, int min, char ch) :day(day), hour(hour), min(min), type(ch) {} // 便于排序  friend bool operator&amp;lt;(const Record &amp;amp;a, const Record &amp;amp;b) { return a.day * 1440 + a.hour * 60 + a.min &amp;lt; b.day * 1440 + b.hour * 60 + b.</description>
+    </item>
+    
+    <item>
+      <title>免费代理ip的爬取</title>
+      <link>http://rammiah.org/posts/%E5%85%8D%E8%B4%B9%E4%BB%A3%E7%90%86ip%E7%9A%84%E7%88%AC%E5%8F%96/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/%E5%85%8D%E8%B4%B9%E4%BB%A3%E7%90%86ip%E7%9A%84%E7%88%AC%E5%8F%96/</guid>
+      <description>爬虫一直是python使用的一个重要部分，而许多网站也为此做了许多反爬措施，其中爬虫访问过于频繁直接封ip地址也作为一种“伤敌一千，自损八百”的方法被许多网站采用，代理ip便可以防止这种情况出现。
+ 搜索免费代理提供网站 提供免费代理的网站直接百度还是有很多的，这里我就选取了西刺免费代理，选取了透明代理进行爬取。
+分析界面 打开网址，可以看见ip很规则的排列，可以说是对爬虫很友好了，Chrome打开F12分析这些代理的显示方式，可以知道是使用列表直接显示，还是比较简单的，单击下一页可以看见url里的最后多了个/2，页面的变换也可以很清楚的知道了。
+在html源码中的分布，
+进行爬取和测试有效性 分析完毕开始爬取ip，直接使用第三方的requests和BeautifulSoup4，可以让抓取变得很方便，代码如下：
+from iptools import header, dict2proxy from bs4 import BeautifulSoup as Soup def parse_items(items): # 存放ip信息字典的列表 ips = [] for item in items: tds = item.find_all(&amp;#39;td&amp;#39;) # 从对应位置获取ip，端口，类型 ip, port, _type = tds[1].text, int(tds[2].text), tds[5].text ips.append({&amp;#39;ip&amp;#39;: ip, &amp;#39;port&amp;#39;: port, &amp;#39;type&amp;#39;: _type}) return ips def check_ip(ip): try: proxy = dict2proxy(ip) url = &amp;#39;https://www.ipip.net/&amp;#39; r = requests.get(url, headers=head, proxies=pro,timeout=5) r.raise_for_status() except: return False else: return True def get_proxies(index): url = &amp;#39;http://www.</description>
+    </item>
+    
+    <item>
+      <title>吸血鬼数</title>
+      <link>http://rammiah.org/posts/%E5%90%B8%E8%A1%80%E9%AC%BC%E6%95%B0/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/%E5%90%B8%E8%A1%80%E9%AC%BC%E6%95%B0/</guid>
+      <description>看Java编程思想的时候看到了这个吸血鬼数，感觉比较有意思就想写下来记录一下，我的这个是针对四位数的，更高的也可以适当向上拓展，我写的时候里面比较麻烦的就是结果重复问题了，用了个静态变量就好了，我的具体思想就是得到一个四位数，将它分开成4个数字，求全排列和全排列对应的值，这里面有重复数字的时候全排列就会重复，确实蛋疼，不过还是解决了。好吧，看代码吧。
+public class Main { private static int lastNumber = 0; // 吸血鬼不会拼。。。  private void magicNumber() { int[] nums = new int[4]; for (int i = 1000; i &amp;lt; 10000; i++) { // 要求不能以00结尾  if (i % 100 == 0) { continue; } // 把数字拆分到数组里好麻烦  int t = i; nums[0] = t / 1000; t %= 1000; nums[1] = t / 100; t %= 100; nums[2] = t / 10; nums[3] = t % 10; isMagic(i, nums, 0); } } private void isMagic(int number, int[] nums, int index) { int a, b; for (int i = index; i &amp;lt; nums.</description>
+    </item>
+    
+    <item>
+      <title>哈夫曼树</title>
+      <link>http://rammiah.org/posts/huffman%E6%A0%91/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>http://rammiah.org/posts/huffman%E6%A0%91/</guid>
+      <description>最近复习的时候遇见了哈夫曼编码，虽然在数据结构和离散数学课上都见识到了这个编码树，不过今天时第一次动手写哈夫曼树，借助了c++的stl写起来还是比较简单的。话不多说，现在开始。
+1. 统计字符频率 统计字符这个还是很简单的，首先我们要打开要处理的文件，
+// 输入的文件名  std::string file_name; std::cout &amp;lt;&amp;lt; &amp;#34;Please input file name:&amp;#34;; // 获取一行  std::getline(std::cin, file_name); std::fstream file(file_name, std::ios_base::in); 我使用字典存放所读到的字符及其频数。
+if (file.is_open()) { // 未到文件尾，继续读  while (!file.eof()) { // 输入  file &amp;gt;&amp;gt; ch; // 搜索一下在不在里面，其实map的话不在里面int会初始为0，不管也行  //if (map.find(ch) != map.end()) {  //++map[ch];  //}  //else {  // map[ch] = 1;  //}  ++map[ch]; ++sum; } file.close(); } // 打开错误了  else { std::cerr &amp;lt;&amp;lt; &amp;#34;Open file error.</description>
+    </item>
+    
   </channel>
 </rss>

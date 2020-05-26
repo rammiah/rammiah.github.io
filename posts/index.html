@@ -108,7 +108,240 @@
 </div>
 </div>
       
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/veilog%E8%B8%A9%E5%9D%91%E6%97%A5%E5%BF%97/" class="link black dim">
+        Verilog踩坑日志
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      移位操作 verilog中的reg向量是可以看做一个整数直接使用的，在定义或者声明时不指明符号的话，默认都是无符号数，在进行移位时都是使用逻辑运算的，只有指明有符号数时右移位使用&gt;&gt;&gt;才会使用符号位进行填充，但是在你想要对一个未声明为有符号的向量例如data使用有符号移位时可以这么写$signed(data)&gt;&gt;&gt;shift，将其转换为有符号数进行移位。
+常量的声明 verilog的常量声明也是个坑，直接的一个数字比如1就会被当成一个32位的数，有无符号看是否有signed声明，而定义一个别的数时例如16位的数0x1f时需要写成16h'1f，而不是2'h1f，前面的数字实际上值得是数字的二进制宽度。其他进制相同。
+数字的大小比较 数字的大小比较建议都是先给其加上signed或者signed系统函数再比较，这样的话会更加明显一些。
+数字位宽拓展 带符号拓展，将符号位重复对应次数，例如16位的数据data要拓展为32位数据，{{16{data[15]}, data}}，无符号拓展为{{16{0}}, data}。很有用的技巧，不需要再去编写符号拓展模块，直接写在代码中就行了，在立即数拓展时会用到。
+指令数据的读入 系统函数$memread[h/b]，16进制直接一行给出一个位数对应的16进制数据，很方便的读入指令，2进制的同理，不过需要给出转换为二进制的数据。
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" class="link black dim">
+        V2Ray搭建过程记录
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      由于前几天我的小飞机在连接时会有一定几率被reset，去年也在Github上看到了使用机器学习方法来检测​飞机流量的方法，于是前去寻找新的科学爱国的方式，最终找到了v2ray这个项目，看了一下官网的教程，比小飞机复杂了不少，决定还是记录下来搭建过程为好，以免以后需要时再用到。
+准备服务器 能看到这篇文章的人应该不用我来提示为什么要准备一台能够访问外网的VPS了吧，我自己用的是阿里云的服务器，比较方便的地方就是控制台比较好用一些，手机上也有app，以前用的是vultr的3.5$的东京的服务器，说实话延迟确实比较高，阿里云的轻量应用服务器链接，可以选里面的24元/月香港的那个，系统选择ubuntu16.04，时长1个月，支付宝付款就行。安装好后配置一下，可以选择在远程连接里加入自己的密钥，重启后使用密钥登陆，关闭密码登陆，这样的话基本上是不会被人黑掉了。
+安装V2Ray v2ray在ubuntu上没有仓库，所以就只好去项目主页下载了。
+打开v2ray，选择自己系统版本对应的下载就好了，我的是Ubuntu16.04 64位，就选v2ray-linux-64.zip，右键复制链接地址，连上服务器，使用wget下载文件到服务器，安装一下zip，先创建一个v2ray文件夹，使用unzip将压缩包内容解压到v2ray文件夹中，进入文件夹，将systemd中的v2ray.service移动到/etc/systemd/system/，这样就可以使用systemd启动v2ray了，创建/etc/v2ray文件夹，准备存放config.json，退回到上级v2ray文件夹所在目录，将v2ray文件夹移动到/usr/bin中，至此安装完成。
+配置文件编写 在/etc/v2ray/中创建一个config.json文件，我写的配置如下：
+{ &#34;log&#34;: { &#34;loglevel&#34;: &#34;warning&#34; }, &#34;inbounds&#34;: [{ &#34;port&#34;:777, // 监听的端口 &#34;listen&#34;: &#34;0.0.0.0&#34;, // 监听的ip &#34;protocol&#34;: &#34;vmess&#34;, // 加密方式 &#34;settings&#34;: { &#34;udp&#34;: true, // 启用udp &#34;clients&#34;: [{ &#34;id&#34;: &#34;uuid&#34;, //python可以使用uuid.uuid4()生成一个，服务器客户端必须相同 &#34;alterId&#34;: 100 // 1-100随意，我选100，只要客户端与服务器相同即可 }] }, &#34;streamSettings&#34;: {// 此处为开启kcp，不需要的可以删掉 &#34;network&#34;: &#34;mkcp&#34;, &#34;kcpSettings&#34;: { &#34;uplinkCapacity&#34;: 4, // 传出速率30M带宽大约就是4MB/s &#34;downlinkCapacity&#34;: 12, // 阿里云的传入带宽测试的为100M作用，设置成12MB/s &#34;congestion&#34;: true, // 开启阻塞控制 &#34;header&#34;: { &#34;type&#34;: &#34;none&#34; } } } }], // 传出直接freedom &#34;outbounds&#34;: [{ &#34;protocol&#34;: &#34;freedom&#34;, &#34;settings&#34;: {} }] } 使用systemctl start v2ray启动，systemctl status v2ray进行日志查看，systemctl enable v2ray开机自启。
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/c&#43;&#43;string%E4%B8%8E%E6%95%B0%E5%AD%97%E7%9A%84%E4%BA%92%E8%BD%AC/" class="link black dim">
+        c&#43;&#43;string与数字的互转
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      c++reference上面列举了一些方法。
+1.数字转string： 数字转string，标准库里专门提供了函数：
+ 包含的头文件 string，使用的话就是直接std::to_string(T para)，会返回一个string，这个函数接受的参数可以是int、long、long long、及其unsigned，float、double、long double等，使用起来还是比较方便的。
+ 2.string转数字 至于string转数字，标准库也提供有函数，可是我在搜索的时候发现了很多是使用stringstream，我看了下也是比较麻烦，我这里就不说了。
+ 同样包含头文件 string，使用方法，std::stoi,std::stol,std::stoll,std::stof等等，其实就是把c中的a换成s就是了，也是很方便的。
+  
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/c&#43;&#43;%E5%B8%B8%E9%87%8F%E6%96%B9%E6%B3%95/" class="link black dim">
+        C&#43;&#43;常量方法
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      本文总结了静态成员的使用、单例的实现、常量对象与常量方法，以及如何将常量方法重载为普通方法。
+静态成员  对象成员的声明前加 static 即可定义为静态成员，静态成员必须在声明类的文件中进行声明（通常会初始化），否则链接错。 访问静态成员可以通过类名，也可以通过对象名。
+class CPerson{ static int count; }; int CPerson::count = 0; CPerson p1, &amp;p2 = p1, *p3 = new CPerson(); cout&lt;&lt;CPerson::count&lt;&lt;endl; cout&lt;&lt;p1.count&lt;&lt;endl; cout&lt;&lt;p2.count&lt;&lt;endl; cout&lt;&lt;p3-&gt;count&lt;&lt;endl;  只有静态常量整型才可以在类的声明中，直接初始化。 sizeof运算符不会计算静态常量。 静态方法不可访问非静态成员、this指针。  单例的实现  在C++中，借由静态成员变量，可以实现单例模式。首先需要将构造函数私有化，并提供获取单例的方法。 此后还需禁止复制构造函数、禁止赋值运算符。
+class CPerson{ private: static CPerson* p; CPerson(){}; CPerson(CPerson&amp;); const CPerson&amp; operator= (const CPerson&amp;); public: static Person* instance(){ return p ? p : (p = new P()); } }; CPerson* CPerson::p = NULL; 常量对象与常量方法  C++类是用户定义的数据类型，也可以声明为常量。因为方法调用可能会改变对象属性， 所以常量对象只能调用构造函数、析构函数以及常量方法。
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/java%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8Dbing%E5%9B%BE%E7%89%87%E9%93%BE%E6%8E%A5/" class="link black dim">
+        Java正则表达式匹配Bing图片链接
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      Java学习到了正则表达式，总想做点有用的东西，这两天想给电脑换壁纸，看到Bing每天的主页图片挺好看的，就寻思着抓下来。 第一步就是分析主页的结构了这个Bing的主页图片直接使用小箭头抓是抓不到的，在Network的Img里我们可以找到图片所在处：
+把链接copy下来，在Element里面搜索我们边可以看到链接是在一个JS脚本里面的，这个时候就比较清楚我们要怎么搞了， 链接所在的那一片弄出来就是这个样子了
+ g_img={url: &ldquo;/az/hprichbg/rb/LoxodontaAfricana_ZH-CN10434704249_1920x1080.jpg&rdquo;} 把这个东东里的链接搞出来加上 http://cn.bing.com 就是我们需要的图片链接了，那么这个正则表达式写出来就是
+ &quot;g_img=\\{url: \&quot;([\\w_\\-/]+?\\.jpg)\&quot;&quot; 我开始找的时候把后面的&rdquo;}&ldquo;加上去发现找不到链接，只好使用这个了，在找到链接后我们就可以获取到图片的二进制内容，写入Java的文件中保存起来了。这里又学习了一点Java的文件知识，如何判断一个文件是否已经存在，新建文件，写入二进制等东西。 具体的代码就是下面了，也不是很多，就几十行
+import java.io.File; import java.io.FileOutputStream; import java.io.IOException; import java.io.InputStream; import java.net.URL; import java.nio.file.FileAlreadyExistsException; import java.util.regex.Matcher; import java.util.regex.Pattern; public class GetBingPicture { public static void main(String[] args) throws Exception { GetBingPicture getBingPicture = new GetBingPicture(); String home = &#34;http://cn.bing.com&#34;; // 获取链接  String url = getBingPicture.GetUrl(home); // 保存图片  getBingPicture.SavePicture(home + url); } private String GetUrl(String home_url) throws Exception { InputStream is = new URL(home_url).
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/leetcode-318-maximum-product-of-word-lengths/" class="link black dim">
+        Leetcode 318 Maximum Product of Word Lengths
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      题目分析  Given a string array words, find the maximum value of length(word[i]) * length(word[j]) where the two words do not share common letters. You may assume that each word will contain only lower case letters. If no such two words exist, return 0.
+Example 1:
+Given [&quot;abcw&quot;, &quot;baz&quot;, &quot;foo&quot;, &quot;bar&quot;, &quot;xtfn&quot;, &quot;abcdef&quot;] Return 16 The two words can be &quot;abcw&quot;, &quot;xtfn&quot;.
+Example 2:
+Given [&quot;a&quot;, &quot;ab&quot;, &quot;abc&quot;, &quot;d&quot;, &quot;cd&quot;, &quot;bcd&quot;, &quot;abcd&quot;] Return 4 The two words can be &quot;ab&quot;, &quot;cd&quot;.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/leetcode-33/" class="link black dim">
+        LeetCode 33
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      今天我没事干，决定把好多天没写的Leetcode看一下，看到了33题，题目如下：
+ 给定一个经过“旋转变换”的有序数组还有一个你要查找的目标数字，给出目标数字在数组中的下标，不存在则返回-1。例如给定{4， 5， 6， 7， 0， 1， 2， 3}，6，函数返回值就应该是2。
+ 题目相信大家都能看懂，也都能想到一定的方法。那么接下来就一起探讨一下吧。 第一种方法：
+最容易想到的也一定就是最笨的，那就是直接遍历这个数组，这当然是可行的，下面给出对应的Java代码：
+public class Solution { public int search(int[] nums, int target) { // 使用Java一定要注意判断是否为空指针  if (nums == null)return -1; for (int i = 0; i &lt; nums.length; i++) { if (nums[i] == target) return i; } return -1; } } 嗯，结果还不错，顺利通过所有的样例，排名超过87%，(lll￢ω￢)这么暴力的吗？难道大部分人都是直接遍历的。。。
+第二种方法： 嗯，我想大家都应该理解出题人绝不是想让我们暴力搜索的，所以自然看到题目中的有序，就应该想到是二分搜索啦，那么这个题的话要怎么使用二分搜索呢？由题目中的样例可以推测我们是要把数组分为两部分看的，判断方法就需要改进了。
+ 首先判断mid处的值是不是target，是的话可以直接返回，不是的话就有点麻烦了，判断mid是否大于最左端处的值，大于说明这个mid是在左端的半边的，这个时候如果target夹在两者中间时就只需要r = mid - 1就是了，没有在其中的话说明不是在mid左半边的l = mid + 1，下面的就同理了。
+ 看代码：
+public class Solution { public int search(int[] nums, int target) { // 使用Java一定要注意判断是否为空指针  if (nums == null)return -1; int l = 0, r = nums.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/leetcode-567-permutation-in-string/" class="link black dim">
+        LeetCode 567 Permutation in String
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      传送门
+题目分析  Given two strings
+s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string&rsquo;s permutations is the substring of the second string.
+Example 1:
+Input:s1 = &quot;ab&quot; s2 = &quot;eidbaooo&quot; Output:True Explanation: s2 contains one permutation of s1 (&quot;ba&quot;). Example 2:
+Input:s1= &quot;ab&quot; s2 = &quot;eidboaoo&quot; Output: False Note:
+ The input strings only contain lower case letters.
+    </div>
+  </div>
+</div>
+</div>
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="http://rammiah.org/posts/leetcode-796-rotate-string/" class="link black dim">
+        LeetCode 796 Rotate String
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      传送门：LeetCode 796
+题目分析 题目原文：
+ We are given two strings, A and B.
+A shift on A consists of taking string A and moving the leftmost character to the rightmost position. For example, if A = 'abcde', then it will be 'bcdea' after one shift on A. Return True if and only if A can become B after some number of shifts on A.
+Example 1: Input: A = 'abcde', B = 'cdeab' Output: true Example 2: Input: A = 'abcde', B = 'abced' Output: false  题目就是一个字符串经过移位操作操作与另一个字符串相等，类似循环移位，判断给定的两个字符串是否满足这种关系。
+    </div>
+  </div>
+</div>
+</div>
+      
     </section>
+
+<ul class="pagination">
+    
+    <li class="page-item">
+        <a href="/posts/" class="page-link" aria-label="First"><span aria-hidden="true">&laquo;&laquo;</span></a>
+    </li>
+    
+    <li class="page-item disabled">
+    <a  class="page-link" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a>
+    </li>
+    
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li class="page-item active"><a class="page-link" href="/posts/">1</a></li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li class="page-item"><a class="page-link" href="/posts/page/2/">2</a></li>
+    
+    
+    
+    
+    
+    
+        
+        
+    
+    
+    <li class="page-item"><a class="page-link" href="/posts/page/3/">3</a></li>
+    
+    
+    <li class="page-item">
+    <a href="/posts/page/2/" class="page-link" aria-label="Next"><span aria-hidden="true">&raquo;</span></a>
+    </li>
+    
+    <li class="page-item">
+        <a href="/posts/page/3/" class="page-link" aria-label="Last"><span aria-hidden="true">&raquo;&raquo;</span></a>
+    </li>
+    
+</ul>
 
 </article>
 

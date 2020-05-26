@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>LeetCode 567 Permutation in String | Hugo Site</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.71.0" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.1cb140d8ba31d5b2f1114537dd04802a.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+    
+    <meta property="og:title" content="LeetCode 567 Permutation in String" />
+<meta property="og:description" content="传送门
+题目分析  Given two strings
+s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string&rsquo;s permutations is the substring of the second string.
+Example 1:
+Input:s1 = &quot;ab&quot; s2 = &quot;eidbaooo&quot; Output:True Explanation: s2 contains one permutation of s1 (&quot;ba&quot;). Example 2:
+Input:s1= &quot;ab&quot; s2 = &quot;eidboaoo&quot; Output: False Note:
+ The input strings only contain lower case letters." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://rammiah.org/posts/leetcode-567-permutation-in-string/" />
+<meta property="article:published_time" content="2019-01-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-01-01T00:00:00+00:00" />
+<meta itemprop="name" content="LeetCode 567 Permutation in String">
+<meta itemprop="description" content="传送门
+题目分析  Given two strings
+s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string&rsquo;s permutations is the substring of the second string.
+Example 1:
+Input:s1 = &quot;ab&quot; s2 = &quot;eidbaooo&quot; Output:True Explanation: s2 contains one permutation of s1 (&quot;ba&quot;). Example 2:
+Input:s1= &quot;ab&quot; s2 = &quot;eidboaoo&quot; Output: False Note:
+ The input strings only contain lower case letters.">
+<meta itemprop="datePublished" content="2019-01-01T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-01-01T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="239">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="LeetCode 567 Permutation in String"/>
+<meta name="twitter:description" content="传送门
+题目分析  Given two strings
+s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string&rsquo;s permutations is the substring of the second string.
+Example 1:
+Input:s1 = &quot;ab&quot; s2 = &quot;eidbaooo&quot; Output:True Explanation: s2 contains one permutation of s1 (&quot;ba&quot;). Example 2:
+Input:s1= &quot;ab&quot; s2 = &quot;eidboaoo&quot; Output: False Note:
+ The input strings only contain lower case letters."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="http://rammiah.org/" class="f3 fw2 hover-white no-underline white-90 dib">
+      Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=http://rammiah.org/posts/leetcode-567-permutation-in-string/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=http://rammiah.org/posts/leetcode-567-permutation-in-string/&amp;text=LeetCode%20567%20Permutation%20in%20String" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http://rammiah.org/posts/leetcode-567-permutation-in-string/&amp;title=LeetCode%20567%20Permutation%20in%20String" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">LeetCode 567 Permutation in String</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2019-01-01T00:00:00Z">January 1, 2019</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p><a href="https://leetcode.com/problems/permutation-in-string/description/">传送门</a></p>
+<h2 id="题目分析">题目分析</h2>
+<blockquote>
+<p>Given two strings</p>
+<p>s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string&rsquo;s permutations is the substring of the second string.</p>
+<p><strong>Example 1:</strong></p>
+<pre><code>Input:s1 = &quot;ab&quot; s2 = &quot;eidbaooo&quot;
+Output:True
+Explanation: s2 contains one permutation of s1 (&quot;ba&quot;).
+</code></pre><p><strong>Example 2:</strong></p>
+<pre><code>Input:s1= &quot;ab&quot; s2 = &quot;eidboaoo&quot;
+Output: False
+</code></pre><p><strong>Note:</strong></p>
+<ol>
+<li>The input strings only contain lower case letters.</li>
+<li>The length of both given strings is in range [1, 10,000].</li>
+</ol>
+</blockquote>
+<p>题目足够简单，计算在字符串<code>s2</code>中是否有<code>s1</code>的某个排列。</p>
+<h2 id="思考">思考</h2>
+<p>暴力计算的相信一定会超时的，毕竟计算一个字符串的排列可不是什么省时间的事，就算存放在列表里也不会提高太多效率，discuss里还有别的$O(n)$的算法如滑动窗口，我在这里说一个灰常简单的思路。</p>
+<p>首先是利用全排列这个东西就可以了解到这个是求主串中是否有一个字串的字符和匹配串的字符全部相同（包含个数和种类），这个想到就可以继续向下了。</p>
+<p>字符串哈希值相信大家都知道，哈希值的要求是对于同一个字符串得出的哈希值每次都是一样的，不一样的字符串尽量保证哈希值不相同，毕竟碰撞是不可避免的，这个题里就可以使用哈希的概念，将字符映射为哈希值，并将字符串也变为哈希值的和，在计算主串时就可以也计算同等长度的串是否哈希值和和匹配串相同，相同就可以返回true。</p>
+<h2 id="代码实现">代码实现</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Solution</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// 26个随机数，不要问我是怎么得到的，python random模块了解一下
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span><span style="color:#f92672">[]</span> hashMap <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>77886<span style="color:#f92672">,</span> 51044<span style="color:#f92672">,</span> 75120<span style="color:#f92672">,</span> 93338<span style="color:#f92672">,</span> 63245<span style="color:#f92672">,</span> 84866<span style="color:#f92672">,</span> 70301<span style="color:#f92672">,</span> 19244<span style="color:#f92672">,</span>
+            37029<span style="color:#f92672">,</span> 95036<span style="color:#f92672">,</span> 62918<span style="color:#f92672">,</span> 79389<span style="color:#f92672">,</span> 52211<span style="color:#f92672">,</span> 69968<span style="color:#f92672">,</span> 14003<span style="color:#f92672">,</span> 56270<span style="color:#f92672">,</span> 20747<span style="color:#f92672">,</span> 64639<span style="color:#f92672">,</span> 26711<span style="color:#f92672">,</span> 95751<span style="color:#f92672">,</span> 32553<span style="color:#f92672">,</span>
+            14959<span style="color:#f92672">,</span> 81792<span style="color:#f92672">,</span> 41986<span style="color:#f92672">,</span> 75273<span style="color:#f92672">,</span> 99929<span style="color:#f92672">,};</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">checkInclusion</span><span style="color:#f92672">(</span>String s1<span style="color:#f92672">,</span> String s2<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// 长度关系满足s1不比s2长
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>s1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;</span> s2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">// 转换为字符数组，提高速度，下面不需要用到String库的方法
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">char</span><span style="color:#f92672">[]</span> cs1 <span style="color:#f92672">=</span> s1<span style="color:#f92672">.</span><span style="color:#a6e22e">toCharArray</span><span style="color:#f92672">(),</span> cs2 <span style="color:#f92672">=</span> s2<span style="color:#f92672">.</span><span style="color:#a6e22e">toCharArray</span><span style="color:#f92672">();</span>
+        <span style="color:#75715e">// 记录两个字串的哈希值
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">long</span> cs1hash <span style="color:#f92672">=</span> 0<span style="color:#f92672">,</span> cs2hash <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> cs1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+            cs1hash <span style="color:#f92672">+=</span> hashMap<span style="color:#f92672">[</span>cs1<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">-</span> <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">];</span>
+            cs2hash <span style="color:#f92672">+=</span> hashMap<span style="color:#f92672">[</span>cs2<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">-</span> <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">];</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">// 第一个先比较了
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>cs1hash <span style="color:#f92672">==</span> cs2hash<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">// 计算可以比较的次数
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> len <span style="color:#f92672">=</span> cs2<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">-</span> cs1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> len<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// cs2迭代为新的哈希值
+</span><span style="color:#75715e"></span>            cs2hash <span style="color:#f92672">+=</span> hashMap<span style="color:#f92672">[</span>cs2<span style="color:#f92672">[</span>i <span style="color:#f92672">+</span> cs1<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">]</span> <span style="color:#f92672">-</span> <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">-</span> hashMap<span style="color:#f92672">[</span>cs2<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">-</span> <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">];</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>cs1hash <span style="color:#f92672">==</span> cs2hash<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="感想">感想</h2>
+<p>关于字符串匹配，最有名的应该就是KMP了，但是KMP算法我见了太多次，发现根本学不会/(ㄒoㄒ)/~~，还好有另一个Robin-Karp指纹算法倒是看了一次就纪录下来了，就跟哈希值一样，计算字串的哈希值，主串中的字串哈希值都可以使用前面的在$O(1)$内求出来，效率还是比较高的，用在这里不需要考虑字串中字符的顺序了，乘除操作也就可以替换为加减了。</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://rammiah.org/" >
+    &copy;  Hugo Site 2020 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

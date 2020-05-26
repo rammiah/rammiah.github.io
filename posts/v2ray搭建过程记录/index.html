@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>V2Ray搭建过程记录 | Hugo Site</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.71.0" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.1cb140d8ba31d5b2f1114537dd04802a.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+    
+    <meta property="og:title" content="V2Ray搭建过程记录" />
+<meta property="og:description" content="由于前几天我的小飞机在连接时会有一定几率被reset，去年也在Github上看到了使用机器学习方法来检测​飞机流量的方法，于是前去寻找新的科学爱国的方式，最终找到了v2ray这个项目，看了一下官网的教程，比小飞机复杂了不少，决定还是记录下来搭建过程为好，以免以后需要时再用到。
+准备服务器 能看到这篇文章的人应该不用我来提示为什么要准备一台能够访问外网的VPS了吧，我自己用的是阿里云的服务器，比较方便的地方就是控制台比较好用一些，手机上也有app，以前用的是vultr的3.5$的东京的服务器，说实话延迟确实比较高，阿里云的轻量应用服务器链接，可以选里面的24元/月香港的那个，系统选择ubuntu16.04，时长1个月，支付宝付款就行。安装好后配置一下，可以选择在远程连接里加入自己的密钥，重启后使用密钥登陆，关闭密码登陆，这样的话基本上是不会被人黑掉了。
+安装V2Ray v2ray在ubuntu上没有仓库，所以就只好去项目主页下载了。
+打开v2ray，选择自己系统版本对应的下载就好了，我的是Ubuntu16.04 64位，就选v2ray-linux-64.zip，右键复制链接地址，连上服务器，使用wget下载文件到服务器，安装一下zip，先创建一个v2ray文件夹，使用unzip将压缩包内容解压到v2ray文件夹中，进入文件夹，将systemd中的v2ray.service移动到/etc/systemd/system/，这样就可以使用systemd启动v2ray了，创建/etc/v2ray文件夹，准备存放config.json，退回到上级v2ray文件夹所在目录，将v2ray文件夹移动到/usr/bin中，至此安装完成。
+配置文件编写 在/etc/v2ray/中创建一个config.json文件，我写的配置如下：
+{ &#34;log&#34;: { &#34;loglevel&#34;: &#34;warning&#34; }, &#34;inbounds&#34;: [{ &#34;port&#34;:777, // 监听的端口 &#34;listen&#34;: &#34;0.0.0.0&#34;, // 监听的ip &#34;protocol&#34;: &#34;vmess&#34;, // 加密方式 &#34;settings&#34;: { &#34;udp&#34;: true, // 启用udp &#34;clients&#34;: [{ &#34;id&#34;: &#34;uuid&#34;, //python可以使用uuid.uuid4()生成一个，服务器客户端必须相同 &#34;alterId&#34;: 100 // 1-100随意，我选100，只要客户端与服务器相同即可 }] }, &#34;streamSettings&#34;: {// 此处为开启kcp，不需要的可以删掉 &#34;network&#34;: &#34;mkcp&#34;, &#34;kcpSettings&#34;: { &#34;uplinkCapacity&#34;: 4, // 传出速率30M带宽大约就是4MB/s &#34;downlinkCapacity&#34;: 12, // 阿里云的传入带宽测试的为100M作用，设置成12MB/s &#34;congestion&#34;: true, // 开启阻塞控制 &#34;header&#34;: { &#34;type&#34;: &#34;none&#34; } } } }], // 传出直接freedom &#34;outbounds&#34;: [{ &#34;protocol&#34;: &#34;freedom&#34;, &#34;settings&#34;: {} }] } 使用systemctl start v2ray启动，systemctl status v2ray进行日志查看，systemctl enable v2ray开机自启。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" />
+<meta property="article:published_time" content="2019-02-18T11:07:27+08:00" />
+<meta property="article:modified_time" content="2019-02-18T11:07:27+08:00" />
+<meta itemprop="name" content="V2Ray搭建过程记录">
+<meta itemprop="description" content="由于前几天我的小飞机在连接时会有一定几率被reset，去年也在Github上看到了使用机器学习方法来检测​飞机流量的方法，于是前去寻找新的科学爱国的方式，最终找到了v2ray这个项目，看了一下官网的教程，比小飞机复杂了不少，决定还是记录下来搭建过程为好，以免以后需要时再用到。
+准备服务器 能看到这篇文章的人应该不用我来提示为什么要准备一台能够访问外网的VPS了吧，我自己用的是阿里云的服务器，比较方便的地方就是控制台比较好用一些，手机上也有app，以前用的是vultr的3.5$的东京的服务器，说实话延迟确实比较高，阿里云的轻量应用服务器链接，可以选里面的24元/月香港的那个，系统选择ubuntu16.04，时长1个月，支付宝付款就行。安装好后配置一下，可以选择在远程连接里加入自己的密钥，重启后使用密钥登陆，关闭密码登陆，这样的话基本上是不会被人黑掉了。
+安装V2Ray v2ray在ubuntu上没有仓库，所以就只好去项目主页下载了。
+打开v2ray，选择自己系统版本对应的下载就好了，我的是Ubuntu16.04 64位，就选v2ray-linux-64.zip，右键复制链接地址，连上服务器，使用wget下载文件到服务器，安装一下zip，先创建一个v2ray文件夹，使用unzip将压缩包内容解压到v2ray文件夹中，进入文件夹，将systemd中的v2ray.service移动到/etc/systemd/system/，这样就可以使用systemd启动v2ray了，创建/etc/v2ray文件夹，准备存放config.json，退回到上级v2ray文件夹所在目录，将v2ray文件夹移动到/usr/bin中，至此安装完成。
+配置文件编写 在/etc/v2ray/中创建一个config.json文件，我写的配置如下：
+{ &#34;log&#34;: { &#34;loglevel&#34;: &#34;warning&#34; }, &#34;inbounds&#34;: [{ &#34;port&#34;:777, // 监听的端口 &#34;listen&#34;: &#34;0.0.0.0&#34;, // 监听的ip &#34;protocol&#34;: &#34;vmess&#34;, // 加密方式 &#34;settings&#34;: { &#34;udp&#34;: true, // 启用udp &#34;clients&#34;: [{ &#34;id&#34;: &#34;uuid&#34;, //python可以使用uuid.uuid4()生成一个，服务器客户端必须相同 &#34;alterId&#34;: 100 // 1-100随意，我选100，只要客户端与服务器相同即可 }] }, &#34;streamSettings&#34;: {// 此处为开启kcp，不需要的可以删掉 &#34;network&#34;: &#34;mkcp&#34;, &#34;kcpSettings&#34;: { &#34;uplinkCapacity&#34;: 4, // 传出速率30M带宽大约就是4MB/s &#34;downlinkCapacity&#34;: 12, // 阿里云的传入带宽测试的为100M作用，设置成12MB/s &#34;congestion&#34;: true, // 开启阻塞控制 &#34;header&#34;: { &#34;type&#34;: &#34;none&#34; } } } }], // 传出直接freedom &#34;outbounds&#34;: [{ &#34;protocol&#34;: &#34;freedom&#34;, &#34;settings&#34;: {} }] } 使用systemctl start v2ray启动，systemctl status v2ray进行日志查看，systemctl enable v2ray开机自启。">
+<meta itemprop="datePublished" content="2019-02-18T11:07:27&#43;08:00" />
+<meta itemprop="dateModified" content="2019-02-18T11:07:27&#43;08:00" />
+<meta itemprop="wordCount" content="181">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="V2Ray搭建过程记录"/>
+<meta name="twitter:description" content="由于前几天我的小飞机在连接时会有一定几率被reset，去年也在Github上看到了使用机器学习方法来检测​飞机流量的方法，于是前去寻找新的科学爱国的方式，最终找到了v2ray这个项目，看了一下官网的教程，比小飞机复杂了不少，决定还是记录下来搭建过程为好，以免以后需要时再用到。
+准备服务器 能看到这篇文章的人应该不用我来提示为什么要准备一台能够访问外网的VPS了吧，我自己用的是阿里云的服务器，比较方便的地方就是控制台比较好用一些，手机上也有app，以前用的是vultr的3.5$的东京的服务器，说实话延迟确实比较高，阿里云的轻量应用服务器链接，可以选里面的24元/月香港的那个，系统选择ubuntu16.04，时长1个月，支付宝付款就行。安装好后配置一下，可以选择在远程连接里加入自己的密钥，重启后使用密钥登陆，关闭密码登陆，这样的话基本上是不会被人黑掉了。
+安装V2Ray v2ray在ubuntu上没有仓库，所以就只好去项目主页下载了。
+打开v2ray，选择自己系统版本对应的下载就好了，我的是Ubuntu16.04 64位，就选v2ray-linux-64.zip，右键复制链接地址，连上服务器，使用wget下载文件到服务器，安装一下zip，先创建一个v2ray文件夹，使用unzip将压缩包内容解压到v2ray文件夹中，进入文件夹，将systemd中的v2ray.service移动到/etc/systemd/system/，这样就可以使用systemd启动v2ray了，创建/etc/v2ray文件夹，准备存放config.json，退回到上级v2ray文件夹所在目录，将v2ray文件夹移动到/usr/bin中，至此安装完成。
+配置文件编写 在/etc/v2ray/中创建一个config.json文件，我写的配置如下：
+{ &#34;log&#34;: { &#34;loglevel&#34;: &#34;warning&#34; }, &#34;inbounds&#34;: [{ &#34;port&#34;:777, // 监听的端口 &#34;listen&#34;: &#34;0.0.0.0&#34;, // 监听的ip &#34;protocol&#34;: &#34;vmess&#34;, // 加密方式 &#34;settings&#34;: { &#34;udp&#34;: true, // 启用udp &#34;clients&#34;: [{ &#34;id&#34;: &#34;uuid&#34;, //python可以使用uuid.uuid4()生成一个，服务器客户端必须相同 &#34;alterId&#34;: 100 // 1-100随意，我选100，只要客户端与服务器相同即可 }] }, &#34;streamSettings&#34;: {// 此处为开启kcp，不需要的可以删掉 &#34;network&#34;: &#34;mkcp&#34;, &#34;kcpSettings&#34;: { &#34;uplinkCapacity&#34;: 4, // 传出速率30M带宽大约就是4MB/s &#34;downlinkCapacity&#34;: 12, // 阿里云的传入带宽测试的为100M作用，设置成12MB/s &#34;congestion&#34;: true, // 开启阻塞控制 &#34;header&#34;: { &#34;type&#34;: &#34;none&#34; } } } }], // 传出直接freedom &#34;outbounds&#34;: [{ &#34;protocol&#34;: &#34;freedom&#34;, &#34;settings&#34;: {} }] } 使用systemctl start v2ray启动，systemctl status v2ray进行日志查看，systemctl enable v2ray开机自启。"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="http://rammiah.org/" class="f3 fw2 hover-white no-underline white-90 dib">
+      Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/&amp;text=V2Ray%e6%90%ad%e5%bb%ba%e8%bf%87%e7%a8%8b%e8%ae%b0%e5%bd%95" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/&amp;title=V2Ray%e6%90%ad%e5%bb%ba%e8%bf%87%e7%a8%8b%e8%ae%b0%e5%bd%95" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">V2Ray搭建过程记录</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2019-02-18T11:07:27&#43;08:00">February 18, 2019</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p>由于前几天我的小飞机在连接时会有一定几率被reset，去年也在Github上看到了使用机器学习方法来检测​飞机流量的方法，于是前去寻找新的科学爱国的方式，最终找到了v2ray这个项目，看了一下官网的教程，比小飞机复杂了不少，决定还是记录下来搭建过程为好，以免以后需要时再用到。</p>
+<h2 id="准备服务器">准备服务器</h2>
+<p>能看到这篇文章的人应该不用我来提示为什么要准备一台能够访问外网的VPS了吧，我自己用的是阿里云的服务器，比较方便的地方就是控制台比较好用一些，手机上也有app，以前用的是vultr的3.5$的东京的服务器，说实话延迟确实比较高，阿里云的<a href="https://www.aliyun.com/product/swas">轻量应用服务器链接</a>，可以选里面的24元/月香港的那个，系统选择ubuntu16.04，时长1个月，支付宝付款就行。安装好后配置一下，可以选择在远程连接里加入自己的密钥，重启后使用密钥登陆，关闭密码登陆，这样的话基本上是不会被人黑掉了。</p>
+<h2 id="安装v2ray">安装V2Ray</h2>
+<p>v2ray在ubuntu上没有仓库，所以就只好去项目主页下载了。</p>
+<p>打开<a href="https://github.com/v2ray/v2ray-core/releases">v2ray</a>，选择自己系统版本对应的下载就好了，我的是Ubuntu16.04 64位，就选v2ray-linux-64.zip，右键复制链接地址，连上服务器，使用wget下载文件到服务器，安装一下zip，先创建一个v2ray文件夹，使用unzip将压缩包内容解压到v2ray文件夹中，进入文件夹，将systemd中的v2ray.service移动到/etc/systemd/system/，这样就可以使用systemd启动v2ray了，创建/etc/v2ray文件夹，准备存放config.json，退回到上级v2ray文件夹所在目录，将v2ray文件夹移动到/usr/bin中，至此安装完成。</p>
+<h2 id="配置文件编写">配置文件编写</h2>
+<p>在/etc/v2ray/中创建一个config.json文件，我写的配置如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;log&#34;</span>: {
+    <span style="color:#f92672">&#34;loglevel&#34;</span>: <span style="color:#e6db74">&#34;warning&#34;</span>
+  },
+  <span style="color:#f92672">&#34;inbounds&#34;</span>: [{
+    <span style="color:#f92672">&#34;port&#34;</span>:<span style="color:#ae81ff">777</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">监听的端口</span>
+
+    <span style="color:#f92672">&#34;listen&#34;</span>: <span style="color:#e6db74">&#34;0.0.0.0&#34;</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">监听的ip</span>
+
+    <span style="color:#f92672">&#34;protocol&#34;</span>: <span style="color:#e6db74">&#34;vmess&#34;</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">加密方式</span>
+
+    <span style="color:#f92672">&#34;settings&#34;</span>: {
+       <span style="color:#f92672">&#34;udp&#34;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">启用udp</span>
+       <span style="color:#f92672">&#34;clients&#34;</span>: [{
+          <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;uuid&#34;</span>, <span style="color:#960050;background-color:#1e0010">//python可以使用uuid.uuid4()生成一个，服务器客户端必须相同</span>
+          <span style="color:#f92672">&#34;alterId&#34;</span>: <span style="color:#ae81ff">100</span> <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#ae81ff">1-100</span><span style="color:#960050;background-color:#1e0010">随意，我选</span><span style="color:#ae81ff">100</span><span style="color:#960050;background-color:#1e0010">，只要客户端与服务器相同即可</span>
+       }]
+    },
+   <span style="color:#f92672">&#34;streamSettings&#34;</span>: {<span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">此处为开启kcp，不需要的可以删掉</span>
+        <span style="color:#f92672">&#34;network&#34;</span>: <span style="color:#e6db74">&#34;mkcp&#34;</span>,
+        <span style="color:#f92672">&#34;kcpSettings&#34;</span>: {
+          <span style="color:#f92672">&#34;uplinkCapacity&#34;</span>: <span style="color:#ae81ff">4</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">传出速率30M带宽大约就是4MB/s</span>
+          <span style="color:#f92672">&#34;downlinkCapacity&#34;</span>: <span style="color:#ae81ff">12</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">阿里云的传入带宽测试的为100M作用，设置成12MB/s</span>
+          <span style="color:#f92672">&#34;congestion&#34;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">开启阻塞控制</span>
+          <span style="color:#f92672">&#34;header&#34;</span>: {
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;none&#34;</span>
+          }
+        }
+      } 
+  }], <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">传出直接freedom</span>
+  <span style="color:#f92672">&#34;outbounds&#34;</span>: [{
+    <span style="color:#f92672">&#34;protocol&#34;</span>: <span style="color:#e6db74">&#34;freedom&#34;</span>,
+    <span style="color:#f92672">&#34;settings&#34;</span>: {}
+  }]
+}
+</code></pre></div><p>使用systemctl start v2ray启动，systemctl status v2ray进行日志查看，systemctl enable v2ray开机自启。</p>
+<h2 id="客户端设置">客户端设置</h2>
+<p>简述PC上的设置吧，去项目主页下载windows的版本，解压缩后里面文件如下</p>
+<p><img src="https://awsl.xin/media/v2rayfiles.PNG" alt="image"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
+  <span style="color:#f92672">&#34;log&#34;</span>: {
+    <span style="color:#f92672">&#34;loglevel&#34;</span>: <span style="color:#e6db74">&#34;warning&#34;</span>
+  },
+  <span style="color:#f92672">&#34;inbound&#34;</span>: {
+    <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">1080</span>,
+    <span style="color:#f92672">&#34;listen&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+    <span style="color:#f92672">&#34;protocol&#34;</span>: <span style="color:#e6db74">&#34;socks&#34;</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">使用socks接口</span>
+    <span style="color:#f92672">&#34;settings&#34;</span>: {
+      <span style="color:#f92672">&#34;auth&#34;</span>: <span style="color:#e6db74">&#34;noauth&#34;</span>,
+      <span style="color:#f92672">&#34;udp&#34;</span>: <span style="color:#66d9ef">false</span>,
+      <span style="color:#f92672">&#34;ip&#34;</span>: <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>
+    }
+  },
+  <span style="color:#f92672">&#34;outbound&#34;</span>: {
+    <span style="color:#f92672">&#34;protocol&#34;</span>: <span style="color:#e6db74">&#34;vmess&#34;</span>,
+    <span style="color:#f92672">&#34;settings&#34;</span>: {
+      <span style="color:#f92672">&#34;vnext&#34;</span>: [
+        {
+          <span style="color:#f92672">&#34;address&#34;</span>: <span style="color:#e6db74">&#34;ip&#34;</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">ip</span>
+          <span style="color:#f92672">&#34;port&#34;</span>: <span style="color:#ae81ff">777</span>,<span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">端口</span>
+          <span style="color:#f92672">&#34;users&#34;</span>: [
+            {
+              <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;uuid&#34;</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">设置上面的那个</span>
+              <span style="color:#f92672">&#34;alterId&#34;</span>: <span style="color:#ae81ff">100</span> <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">相同</span>
+            }
+          ]
+        }
+      ]
+    }, 
+      <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">kcp相关，不需要的可以删掉</span>
+	<span style="color:#f92672">&#34;streamSettings&#34;</span>: {
+        <span style="color:#f92672">&#34;network&#34;</span>: <span style="color:#e6db74">&#34;kcp&#34;</span>,
+        <span style="color:#f92672">&#34;kcpSettings&#34;</span>: {
+          <span style="color:#f92672">&#34;uplinkCapacity&#34;</span>: <span style="color:#ae81ff">5</span>, <span style="color:#960050;background-color:#1e0010">//</span> <span style="color:#960050;background-color:#1e0010">根据自己的带宽设置</span>
+          <span style="color:#f92672">&#34;downlinkCapacity&#34;</span>: <span style="color:#ae81ff">4</span>, <span style="color:#960050;background-color:#1e0010">//</span>  <span style="color:#960050;background-color:#1e0010">和服务器的出带宽相同</span>
+          <span style="color:#f92672">&#34;congestion&#34;</span>: <span style="color:#66d9ef">true</span>,
+          <span style="color:#f92672">&#34;header&#34;</span>: {
+            <span style="color:#f92672">&#34;type&#34;</span>: <span style="color:#e6db74">&#34;none&#34;</span>
+          }
+        }
+      }
+  }
+}
+
+</code></pre></div><p>v2ray -config config.json启动，wv2ray -config config.json是后台运行。</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://rammiah.org/" >
+    &copy;  Hugo Site 2020 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

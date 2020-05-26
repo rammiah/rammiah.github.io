@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>LeetCode 822 Card Flipping Game | Hugo Site</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.71.0" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.1cb140d8ba31d5b2f1114537dd04802a.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+    
+    <meta property="og:title" content="LeetCode 822 Card Flipping Game" />
+<meta property="og:description" content="传送门
+题目分析  On a table are N cards, with a positive integer printed on the front and back of each card (possibly different).
+We flip any number of cards, and after we choose one card.
+If the number X on the back of the chosen card is not on the front of any card, then this number X is good.
+What is the smallest number that is good? If no number is good, output 0." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://rammiah.org/posts/leetcode-822-card-flipping-game/" />
+<meta property="article:published_time" content="2019-01-01T00:00:00+00:00" />
+<meta property="article:modified_time" content="2019-01-01T00:00:00+00:00" />
+<meta itemprop="name" content="LeetCode 822 Card Flipping Game">
+<meta itemprop="description" content="传送门
+题目分析  On a table are N cards, with a positive integer printed on the front and back of each card (possibly different).
+We flip any number of cards, and after we choose one card.
+If the number X on the back of the chosen card is not on the front of any card, then this number X is good.
+What is the smallest number that is good? If no number is good, output 0.">
+<meta itemprop="datePublished" content="2019-01-01T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2019-01-01T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="290">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="LeetCode 822 Card Flipping Game"/>
+<meta name="twitter:description" content="传送门
+题目分析  On a table are N cards, with a positive integer printed on the front and back of each card (possibly different).
+We flip any number of cards, and after we choose one card.
+If the number X on the back of the chosen card is not on the front of any card, then this number X is good.
+What is the smallest number that is good? If no number is good, output 0."/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="http://rammiah.org/" class="f3 fw2 hover-white no-underline white-90 dib">
+      Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=http://rammiah.org/posts/leetcode-822-card-flipping-game/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=http://rammiah.org/posts/leetcode-822-card-flipping-game/&amp;text=LeetCode%20822%20Card%20Flipping%20Game" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http://rammiah.org/posts/leetcode-822-card-flipping-game/&amp;title=LeetCode%20822%20Card%20Flipping%20Game" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">LeetCode 822 Card Flipping Game</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2019-01-01T00:00:00Z">January 1, 2019</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><p><a href="https://leetcode.com/problems/card-flipping-game/description/">传送门</a></p>
+<h2 id="题目分析">题目分析</h2>
+<blockquote>
+<p>On a table are <code>N</code> cards, with a positive integer printed on the front and back of each card (possibly different).</p>
+<p>We flip any number of cards, and after we choose one card.</p>
+<p>If the number <code>X</code> on the back of the chosen card is not on the front of any card, then this number X is good.</p>
+<p>What is the smallest number that is good?  If no number is good, output <code>0</code>.</p>
+<p>Here, <code>fronts[i]</code> and <code>backs[i]</code> represent the number on the front and back of card <code>i</code>.</p>
+<p>A flip swaps the front and back numbers, so the value on the front is now on the back and vice versa.</p>
+<p><strong>Example:</strong></p>
+<pre><code>Input: fronts = [1,2,4,4,7], backs = [1,3,4,1,3]
+Output: 2
+Explanation: If we flip the second card, the fronts are [1,3,4,4,7] and the backs are [1,2,4,1,3].
+We choose the second card, which has number 2 on the back, and it isn't on the front of any card, so 2 is good.
+</code></pre><p><strong>Note:</strong></p>
+<ol>
+<li><code>1 &lt;= fronts.length == backs.length &lt;= 1000.</code></li>
+<li><code>1 &lt;= fronts[i] &lt;= 2000</code>.</li>
+<li><code>1 &lt;= backs[i] &lt;= 2000</code>.</li>
+</ol>
+</blockquote>
+<p>这个题的题目很具有迷惑性，首先是将卡片选取任意张进行翻转，再随机选取一张，如果这张卡片的的背面数字<code>x</code>没有在所有的正面数字中出现，那么这个数字<code>x</code>就是<em>good</em>的，这个题目要求的是求取最小的满足<em>good</em>条件的数字。</p>
+<h2 id="思考">思考</h2>
+<p>题目看似很复杂，其实只要分析什么样的数字不可能符合就可以很快想到思路了。</p>
+<p>首先这个数字不能在卡片的正面出现，如果出现了的话那就不可能是这个数字，那么思考什么要的数字不可能出现呢？在同一张卡片正反两面都出现的数字不可能，如果一个数字在一张卡片的两侧，那么它一定会出现在正面，这个关系明白了就知道了解题思路了，使用一个数组记录数字是否出现，一个数组记录数字是否可能，如果一个数字在所有卡片上都没有出现，那么我们也是不可以选择它的。找出出现了的并且可能的最小数字即可。</p>
+<p>程序涉及两次遍历，时间复杂度$O(n)$。</p>
+<h2 id="代码实现">代码实现</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Solution</span> {
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">int</span> flipgame(vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">&amp;</span>fronts, vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">&amp;</span>backs) {
+        <span style="color:#66d9ef">int</span> result <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        <span style="color:#66d9ef">int</span> card_cnt <span style="color:#f92672">=</span> fronts.size();
+        <span style="color:#75715e">// 0 possible
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// 1 immpossible
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> possible[<span style="color:#ae81ff">2001</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
+        <span style="color:#75715e">// 0 no, 1 have
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> have[<span style="color:#ae81ff">2001</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
+        <span style="color:#75715e">// 找到所有出现的数字和不可能的数字
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> card_cnt; <span style="color:#f92672">++</span>i) {
+            <span style="color:#75715e">// 标记数字存在
+</span><span style="color:#75715e"></span>            have[fronts[i]] <span style="color:#f92672">=</span> have[backs[i]] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+            <span style="color:#66d9ef">if</span> (fronts[i] <span style="color:#f92672">==</span> backs[i]) {
+                <span style="color:#75715e">// fronts[i]必定存在正反面
+</span><span style="color:#75715e"></span>                <span style="color:#75715e">// 记录为不可能
+</span><span style="color:#75715e"></span>                possible[fronts[i]] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+            }
+        }
+
+        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2001</span>; <span style="color:#f92672">++</span>i) {
+            <span style="color:#75715e">// 第一个满足条件的数字就是最小的
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> (possible[i] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> have[i] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) {
+                <span style="color:#66d9ef">return</span> i;
+            }
+        }
+        <span style="color:#75715e">// 没有满足需求的
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+    }
+};
+</code></pre></div><h2 id="感想">感想</h2>
+<p>仔细分析题意，找出隐含的条件，顺利写出代码。</p>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="http://rammiah.org/" >
+    &copy;  Hugo Site 2020 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>

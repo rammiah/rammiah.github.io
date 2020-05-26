@@ -139,8 +139,100 @@
 
           </div>
         
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="http://rammiah.org/posts/veilog%E8%B8%A9%E5%9D%91%E6%97%A5%E5%BF%97/" class="color-inherit dim link">
+            Verilog踩坑日志
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          移位操作 verilog中的reg向量是可以看做一个整数直接使用的，在定义或者声明时不指明符号的话，默认都是无符号数，在进行移位时都是使用逻辑运算的，只有指明有符号数时右移位使用&gt;&gt;&gt;才会使用符号位进行填充，但是在你想要对一个未声明为有符号的向量例如data使用有符号移位时可以这么写$signed(data)&gt;&gt;&gt;shift，将其转换为有符号数进行移位。
+常量的声明 verilog的常量声明也是个坑，直接的一个数字比如1就会被当成一个32位的数，有无符号看是否有signed声明，而定义一个别的数时例如16位的数0x1f时需要写成16h'1f，而不是2'h1f，前面的数字实际上值得是数字的二进制宽度。其他进制相同。
+数字的大小比较 数字的大小比较建议都是先给其加上signed或者signed系统函数再比较，这样的话会更加明显一些。
+数字位宽拓展 带符号拓展，将符号位重复对应次数，例如16位的数据data要拓展为32位数据，{{16{data[15]}, data}}，无符号拓展为{{16{0}}, data}。很有用的技巧，不需要再去编写符号拓展模块，直接写在代码中就行了，在立即数拓展时会用到。
+指令数据的读入 系统函数$memread[h/b]，16进制直接一行给出一个位数对应的16进制数据，很方便的读入指令，2进制的同理，不过需要给出转换为二进制的数据。
+        </div>
+          <a href="http://rammiah.org/posts/veilog%E8%B8%A9%E5%9D%91%E6%97%A5%E5%BF%97/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
+          <div class="relative w-100 mb4">
+            
+<article class="bb b--black-10">
+  <div class="db pv4 ph3 ph0-l no-underline dark-gray">
+    <div class="flex flex-column flex-row-ns">
+      
+      <div class="blah w-100">
+        <h1 class="f3 fw1 athelas mt0 lh-title">
+          <a href="http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" class="color-inherit dim link">
+            V2Ray搭建过程记录
+            </a>
+        </h1>
+        <div class="f6 f5-l lh-copy nested-copy-line-height nested-links">
+          由于前几天我的小飞机在连接时会有一定几率被reset，去年也在Github上看到了使用机器学习方法来检测​飞机流量的方法，于是前去寻找新的科学爱国的方式，最终找到了v2ray这个项目，看了一下官网的教程，比小飞机复杂了不少，决定还是记录下来搭建过程为好，以免以后需要时再用到。
+准备服务器 能看到这篇文章的人应该不用我来提示为什么要准备一台能够访问外网的VPS了吧，我自己用的是阿里云的服务器，比较方便的地方就是控制台比较好用一些，手机上也有app，以前用的是vultr的3.5$的东京的服务器，说实话延迟确实比较高，阿里云的轻量应用服务器链接，可以选里面的24元/月香港的那个，系统选择ubuntu16.04，时长1个月，支付宝付款就行。安装好后配置一下，可以选择在远程连接里加入自己的密钥，重启后使用密钥登陆，关闭密码登陆，这样的话基本上是不会被人黑掉了。
+安装V2Ray v2ray在ubuntu上没有仓库，所以就只好去项目主页下载了。
+打开v2ray，选择自己系统版本对应的下载就好了，我的是Ubuntu16.04 64位，就选v2ray-linux-64.zip，右键复制链接地址，连上服务器，使用wget下载文件到服务器，安装一下zip，先创建一个v2ray文件夹，使用unzip将压缩包内容解压到v2ray文件夹中，进入文件夹，将systemd中的v2ray.service移动到/etc/systemd/system/，这样就可以使用systemd启动v2ray了，创建/etc/v2ray文件夹，准备存放config.json，退回到上级v2ray文件夹所在目录，将v2ray文件夹移动到/usr/bin中，至此安装完成。
+配置文件编写 在/etc/v2ray/中创建一个config.json文件，我写的配置如下：
+{ &#34;log&#34;: { &#34;loglevel&#34;: &#34;warning&#34; }, &#34;inbounds&#34;: [{ &#34;port&#34;:777, // 监听的端口 &#34;listen&#34;: &#34;0.0.0.0&#34;, // 监听的ip &#34;protocol&#34;: &#34;vmess&#34;, // 加密方式 &#34;settings&#34;: { &#34;udp&#34;: true, // 启用udp &#34;clients&#34;: [{ &#34;id&#34;: &#34;uuid&#34;, //python可以使用uuid.uuid4()生成一个，服务器客户端必须相同 &#34;alterId&#34;: 100 // 1-100随意，我选100，只要客户端与服务器相同即可 }] }, &#34;streamSettings&#34;: {// 此处为开启kcp，不需要的可以删掉 &#34;network&#34;: &#34;mkcp&#34;, &#34;kcpSettings&#34;: { &#34;uplinkCapacity&#34;: 4, // 传出速率30M带宽大约就是4MB/s &#34;downlinkCapacity&#34;: 12, // 阿里云的传入带宽测试的为100M作用，设置成12MB/s &#34;congestion&#34;: true, // 开启阻塞控制 &#34;header&#34;: { &#34;type&#34;: &#34;none&#34; } } } }], // 传出直接freedom &#34;outbounds&#34;: [{ &#34;protocol&#34;: &#34;freedom&#34;, &#34;settings&#34;: {} }] } 使用systemctl start v2ray启动，systemctl status v2ray进行日志查看，systemctl enable v2ray开机自启。
+        </div>
+          <a href="http://rammiah.org/posts/v2ray%E6%90%AD%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AE%B0%E5%BD%95/" class="ba b--moon-gray bg-light-gray br2 color-inherit dib f7 hover-bg-moon-gray link mt2 ph2 pv1">read more</a>
+        
+      </div>
+    </div>
+  </div>
+</article>
+
+          </div>
+        
       </section>
 
+      
+      <section class="w-100">
+        <h1 class="f3">More</h1>
+        
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://rammiah.org/posts/c&#43;&#43;string%E4%B8%8E%E6%95%B0%E5%AD%97%E7%9A%84%E4%BA%92%E8%BD%AC/" class="link black dim">
+              c&#43;&#43;string与数字的互转
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://rammiah.org/posts/c&#43;&#43;%E5%B8%B8%E9%87%8F%E6%96%B9%E6%B3%95/" class="link black dim">
+              C&#43;&#43;常量方法
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://rammiah.org/posts/java%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8C%B9%E9%85%8Dbing%E5%9B%BE%E7%89%87%E9%93%BE%E6%8E%A5/" class="link black dim">
+              Java正则表达式匹配Bing图片链接
+            </a>
+          </h2>
+        
+          <h2 class="f5 fw4 mb4 dib mr3">
+            <a href="http://rammiah.org/posts/leetcode-318-maximum-product-of-word-lengths/" class="link black dim">
+              Leetcode 318 Maximum Product of Word Lengths
+            </a>
+          </h2>
+        
+
+        
+        
+          <a href="http://rammiah.org/posts/" class="link db f6 pa2 br3 bg-mid-gray white dim w4 tc">All Posts</a>
+        
+        </section>
       
 
       </div>
